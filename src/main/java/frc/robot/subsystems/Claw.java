@@ -1,7 +1,13 @@
 package frc.robot.subsystems;
 
-public class Claw /* TODO: Extends what? */ {
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotMap;
+
+public class Claw extends SubsystemBase {
     private static Claw instance;
+    private DoubleSolenoid ds;
 
     /**
      * =====================================================================
@@ -11,20 +17,32 @@ public class Claw /* TODO: Extends what? */ {
      * - forward and reverse ids are provided in RobotMap.java
      * =====================================================================
      */
-
-    // TODO: function here [delete this comment]
+    private Claw()
+    {
+        ds = new DoubleSolenoid(RobotMap.Claw.PH_ID, PneumaticsModuleType.REVPH, RobotMap.Claw.CLAW_FORWARD_ID, RobotMap.Claw.CLAW_REVERSE_ID);
+    }
 
     /**
      * ================================================
      * Getter (accessor) for the claw instance variable
      * ================================================
      */
-    // TODO: function here [delete this comment]
+    public DoubleSolenoid getDoubleSolenoid()
+    {
+        return ds;
+    }
 
     /**
      * ==============
      * Singleton Code
      * ==============
      */
-    // TODO: function here [delete this comment]
+    public static Claw getInstance() 
+    {
+        if (instance == null) 
+        {
+            instance = new Claw();
+        }
+        return instance;
+    }
 }

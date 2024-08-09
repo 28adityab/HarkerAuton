@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
+import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -10,9 +11,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 import frc.robot.util.Constants;
 
-public class AngledElevator /* TODO: extends what? */ {
+public class AngledElevator extends SubsystemBase {
     private static AngledElevator instance;
     private double desiredPosition;
+    private TalonFX master;
+    private TalonFX follower;
+    private DigitalInput limitSwitch;
 
     /**
      * =========================================================
@@ -22,10 +26,13 @@ public class AngledElevator /* TODO: extends what? */ {
      * Call initElevator
      * =========================================================
      */
-    
-    // TODO: function here [delete this comment]
-
-
+    private AngledElevator()
+    {
+        master = new TalonFX(RobotMap.AngledElevator.MASTER_ID);
+        follower = new TalonFX(RobotMap.AngledElevator.FOLLOWER_ID);
+        limitSwitch = new DigitalInput(RobotMap.AngledElevator.LIMIT_SWITCH_ID);
+        initElevator();
+    }
 
     /**
      * ===============================================
@@ -33,8 +40,7 @@ public class AngledElevator /* TODO: extends what? */ {
      * ===============================================
      */
     private void initElevator() {
-        
-
+        follower.follow(master);
         /**
          * =========================================================
          * IGNORE EVERYTHING PAST THIS LINE TO THE END OF THE METHOD
@@ -60,7 +66,6 @@ public class AngledElevator /* TODO: extends what? */ {
      * @param   desiredPosition
      * @return  set the master motor using MotionMagic 
      */
-
     public void moveToPosition(double desiredPosition) {
         master.set(ControlMode.MotionMagic, desiredPosition, DemandType.ArbitraryFeedForward, RobotMap.AngledElevator.kG);
     }
@@ -73,8 +78,10 @@ public class AngledElevator /* TODO: extends what? */ {
      * @param   position (double)
      * @return  set the desired position to some position
      */
-
-    // TODO: function here [delete this comment]
+    public void setDesiredPosition(double position)
+    {
+        desiredPosition = position;
+    }
 
     /**
      * ===================================================
@@ -82,8 +89,10 @@ public class AngledElevator /* TODO: extends what? */ {
      * ===================================================
      * @return  desired position (double)
      */
-
-    // TODO: function here [delete this comment]
+    public double getDesiredPosition()
+    {
+        return desiredPosition;
+    }
 
     /**
      * ==============================================================================================================================
@@ -94,8 +103,10 @@ public class AngledElevator /* TODO: extends what? */ {
      * @param   desiredposition 
      * @return  a boolean
      */
-
-    // TODO: function here [delete this comment]
+    public boolean lessThanMaxError(double desiredPosition)
+    {
+        return Math.abs(desiredPosition - instance.getCurrentPosition()) < RobotMap.AngledElevator.MAX_ERROR;
+    }
 
     /**
      * ======================================================================
@@ -103,8 +114,10 @@ public class AngledElevator /* TODO: extends what? */ {
      * ======================================================================
      * @return  get the selected encoder position of the master motor
      */
-
-    // TODO: function here [delete this comment]
+    public double getCurrentPosition()
+    {
+        return master.getSelectedSensorPosition();
+    }
 
     /** Small Functions Below
      * =========================================================================
@@ -121,25 +134,41 @@ public class AngledElevator /* TODO: extends what? */ {
      * @param   power
      * @return  power to the motors using PercentOutput (constant); extends / retracts motors
      */
-
-    // TODO: function here [delete this comment]
-
+    public void setElevatorPower(double power)
+    {
+        if (power == 0)
+        {
+            master.neutralOutput();
+        }
+        else
+        {
+            master.set(ControlMode.PercentOutput, power);
+        }
+    }
 
     /**
      * @return  resetted encoders (set postion of the encoders to zero)
      */
-    // TODO: function here [delete this comment]
+    public void setEncoderPositionToZero()
+    {
+        master.setSelectedSensorPosition(0);
+    }
 
     /**
      * @return  whether elevator is at ground level (at the bottom)
      */
-
-    // TODO: function here [delete this comment]
+    public boolean elevatorAtGroundLevel()
+    {
+        return ! limitSwitch.get();
+    }
 
     /**
      * @return  if the elevator is extended to the max
      */
-    // TODO: function here [delete this comment]
+    public boolean elevatorExtendedToMax()
+    {
+        return getCurrentPosition() > RobotMap.AngledElevator.FORWARD_LIMIT;
+    }
 
 
     /**
@@ -147,6 +176,12 @@ public class AngledElevator /* TODO: extends what? */ {
      * Singleton Code
      * ==============
      */
-
-    // TODO: function here [delete this comment]
+    public static AngledElevator getInstance() 
+    {
+        if (instance == null) 
+        {
+            instance = new AngledElevator();
+        }
+        return instance;
+    }
 }

@@ -1,5 +1,9 @@
 package frc.robot.commands.claw;
 
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.subsystems.Claw;
+
 /**
  * ==================================
  * Remember what needs to be extended
@@ -7,15 +11,17 @@ package frc.robot.commands.claw;
  * What methods do we need?
  * ==================================
  */
-public class CloseClaw /* extends? */ {
+public class CloseClaw extends InstantCommand {
 
     /**
      * =====================================
      * Constructor - what do we need to add?
      * =====================================
      */
-    // TODO: function here [delete this comment]
-
+    public CloseClaw()
+    {
+        addRequirements(Claw.getInstance());
+    }
 
     /**
      * ================================
@@ -23,6 +29,9 @@ public class CloseClaw /* extends? */ {
      * What method?
      * ================================
      */
-    // TODO: function here [delete this comment]
+    public void initialize()
+    {
+        Claw.getInstance().getDoubleSolenoid().set(DoubleSolenoid.Value.kForward);
+    }
     
 }

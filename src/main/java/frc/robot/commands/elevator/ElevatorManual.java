@@ -1,5 +1,10 @@
 package frc.robot.commands.elevator;
 
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.OI;
+import frc.robot.subsystems.AngledElevator;
+import frc.robot.util.XboxGamepad;
+
 /**
  * ==================================
  * Remember what needs to be extended
@@ -7,14 +12,17 @@ package frc.robot.commands.elevator;
  * What methods do we need?
  * ==================================
  */
-public class ElevatorManual /* TODO: extends what? */ {
-
+public class ElevatorManual extends CommandBase {
+    private static AngledElevator instance;
     /**
      * =====================================
      * Constructor - what do we need to add?
      * =====================================
      */
-    // TODO: function here [delete this comment]
+    public ElevatorManual()
+    {
+        addRequirements(AngledElevator.getInstance());
+    }
     
     public void execute() {
         /**
@@ -23,14 +31,21 @@ public class ElevatorManual /* TODO: extends what? */ {
          * else if DRIVER presses the Down DPad Button, Move the elevator down by 500 steps
          * ================================================================================
          */
-        // TODO: code here [delete this comment]
+        if (OI.getInstance().getDriverInstance().getUpDPadButtonState())
+        {
+            AngledElevator.getInstance().moveToPosition(AngledElevator.getInstance().getCurrentPosition() + 500);
+        }
+        if (OI.getInstance().getDriverInstance().getDownDPadButtonState())
+        {
+            AngledElevator.getInstance().moveToPosition(AngledElevator.getInstance().getCurrentPosition() - 500);
+        }
 
         /**
          * ==========================================
          * Always move to Elevator's Desired position
          * ==========================================
          */
-        // TODO: code here [delete this comment]
+        AngledElevator.getInstance().moveToPosition(AngledElevator.getInstance().getDesiredPosition());
     }
 
     /**
@@ -39,5 +54,9 @@ public class ElevatorManual /* TODO: extends what? */ {
      * make sure to override
      * =======================
      */
-    // TODO: function here [delete this comment]
+    @Override
+    public void end(boolean interrupted)
+    {
+        AngledElevator.getInstance().setElevatorPower(0);
+    }
 }
